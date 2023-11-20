@@ -1,4 +1,4 @@
-import Category from "@/models/category";
+import Tag from "@/models/tag";
 import dbConnect from "@/utils/dvConnect";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
@@ -9,13 +9,13 @@ export async function POST(req) {
   const body = await req.json();
 
   try {
-    const { name } = body;
+    const { name, parent } = body;
 
-    const category = await Category.create({ name, slug: slugify(name) });
+    const tag = await Tag.create({ name, parent, slug: slugify(name) });
 
-    return NextResponse.json(category, { status: 201 });
+    return NextResponse.json(tag, { status: 201 });
   } catch (err) {
-    return NextResponse.json(err._message, { status: 500 });
+    return NextResponse.json(err._message);
   }
 }
 
@@ -23,9 +23,9 @@ export async function GET() {
   await dbConnect();
 
   try {
-    const categories = await Category.find().sort({ createdAt: -1 });
+    const tags = await Tag.find().sort({ createdAt: -1 });
 
-    return NextResponse.json(categories);
+    return NextResponse.json(tags);
   } catch (err) {
     return NextResponse.json(err._message, { status: 500 });
   }
